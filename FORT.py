@@ -5,7 +5,6 @@ import statsmodels.api as sm
 from statsmodels.tsa.stattools import adfuller, kpss
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from pmdarima import auto_arima
-import streamlit as st
 from streamlit_lottie import st_lottie
 import json
 
