@@ -49,6 +49,19 @@ def main():
     st_lottie(lottie_json, width='100%', height=300)
     st.title('¡FORT!')
     st.write('Selection of hyperparameters for time series')
+    # Define los nombres de los autores y sus enlaces a LinkedIn
+    autores = [
+        {"nombre": "Mariana Andreína Paredes ", "LinkedIn": "https://www.linkedin.com/in/marianaandreinaparedesmena/"},
+        {"nombre": "Yosmely Bermúdez", "LinkedIn": "https://www.linkedin.com/in/yosmely-bermudez/"}
+    ]
+
+    # Título para la sección de autores
+    st.title("Authors")
+
+    # Renderiza cada autor con un enlace a LinkedIn
+    for autor in autores:
+        st.markdown(f"[{autor['nombre']}]({autor['LinkedIn']})")
+
 
     # Cargar el contenido del archivo JSON
     
