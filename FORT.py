@@ -6,6 +6,7 @@ from statsmodels.tsa.stattools import adfuller, kpss
 from statsmodels.stats.diagnostic import acorr_ljungbox
 from pmdarima import auto_arima
 from streamlit_lottie import st_lottie
+import matplotlib.pyplot as plt
 import json
 
 def load_data(file_path):
