@@ -1,4 +1,4 @@
-from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.arima.model import ARIMA
 import streamlit as st
 import pandas as pd
 import statsmodels.api as sm
