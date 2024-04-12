@@ -43,14 +43,15 @@ def test_stationarity_adfuller(data):
 def main():
     # Ruta al archivo JSON de Lottie descargado localmente
     lottie_file_path = "./Animation - 1712796979757.json"  # Reemplaza con la ruta a tu archivo JSON descargado
+    with open(lottie_file_path, 'r') as f:
+        lottie_json = json.load(f)
+    
+    st_lottie(lottie_json, width='100%', height=300)
     st.title('¡FORT!')
     st.write('Selection of hyperparameters for time series')
 
     # Cargar el contenido del archivo JSON
-    with open(lottie_file_path, 'r') as f:
-        lottie_json = json.load(f)
     
-    st_lottie(lottie_json, width=400, height=400)
 
     uploaded_file = st.file_uploader("Load CSV file", type=['csv'])
     st.write('Remember that your file must be a CSV with the date variable in the index and the column to use for analysis.')
