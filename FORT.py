@@ -77,6 +77,21 @@ def main():
         st.subheader("Table")
         st.write(df)
 
+        
+        # Iterar sobre las columnas del DataFrame
+        for columna in df.columns:
+            # Verificar si la columna es de tipo fecha
+            if pd.api.types.is_datetime64_any_dtype(df[columna]):
+                # Establecer la columna como índice
+                df[columna] = pd.to_datetime(df[columna])  # Convertir la columna a tipo datetime si no lo es ya
+                df.set_index(columna, inplace=True)
+                print(f"Se estableció '{columna}' como el índice del DataFrame.")
+                break  # Detener la iteración después de encontrar la primera columna de fecha
+
+        # Si ninguna columna es de tipo fecha
+        else:
+            print("No se encontraron columnas de fecha en el DataFrame.")
+
         # Widget para ingresar el número de lags
         num_lags = st.number_input("Numbers of Lags para PACF y ACF:", min_value=1, max_value=50, value=10)
 
