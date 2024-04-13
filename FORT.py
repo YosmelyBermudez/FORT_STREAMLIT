@@ -7,6 +7,7 @@ from statsmodels.stats.diagnostic import acorr_ljungbox
 from pmdarima import auto_arima
 from streamlit_lottie import st_lottie
 import matplotlib.pyplot as plt
+from statsmodels.graphics.tsaplots import plot_pacf, plot_acf
 import json
 
 def load_data(file_path):
@@ -102,12 +103,12 @@ def main():
 
         # Visualizar gráfico de autocorrelación parcial (PACF)
         st.subheader(f"Partial Autocorrelation Plot (PACF) with {num_lags} Lags")
-        fig_pacf = sm.graphics.tsa.plot_pacf(result, lags=num_lags)
+        fig_pacf =  plot_pacf(result, lags=num_lags)
         st.pyplot(fig_pacf)
 
         # Visualizar gráfico de autocorrelación (ACF)
         st.subheader(f"Autocorrelation Plot (ACF) with {num_lags} Lags")
-        fig_acf = sm.graphics.tsa.plot_acf(result, lags=num_lags)
+        fig_acf = plot_acf(result, lags=num_lags)
         st.pyplot(fig_acf)
 
         # Pruebas de estacionariedad inicial
