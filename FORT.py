@@ -84,7 +84,7 @@ def main():
             if pd.api.types.is_datetime64_any_dtype(df[columna]):
                 # Establecer la columna como índice
                 df[columna] = pd.to_datetime(df[columna])  # Convertir la columna a tipo datetime si no lo es ya
-                df.set_index(columna, inplace=True)
+                df = df.set_index(columna, inplace=True)
                 print(f"Se estableció '{columna}' como el índice del DataFrame.")
                 break  # Detener la iteración después de encontrar la primera columna de fecha
 
