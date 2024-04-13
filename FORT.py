@@ -63,8 +63,6 @@ def main():
     for autor in autores:
         st.markdown(f"[{autor['nombre']}]({autor['LinkedIn']})")
     # Cargar el contenido del archivo JSON
-
-    uploaded_file = st.file_uploader("Load CSV file", type=['csv'])
     st.write('Remember that your file must be a CSV with the date variable and the column to use for analysis.')
         # Widget para cargar un archivo CSV
     uploaded_file = st.file_uploader("Upload CSV", type="csv")
@@ -110,43 +108,45 @@ def main():
                 fig_acf, ax_acf = plt.subplots()
                 plot_acf(serie, lags=num_lags, ax=ax_acf)
                 st.pyplot(fig_acf)
+
+                # Pruebas de estacionariedad inicial
+                st.subheader("Initial Stationarity Tests")
+
+                # Ejecutar prueba KPSS inicial
+                st.write("### Initial KPSS Test")
+                kpss_result, kpss_p_value = test_stationarity_kpss(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
+                st.write(kpss_result)
+
+                # Ejecutar prueba ADF inicial
+                st.write("### Initial ADF Test")
+                adf_result, adf_p_value = test_stationarity_adfuller(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
+                st.write(adf_result)
+
+                if kpss_p_value < 0.05 or adf_p_value >= 0.05:
+                    st.subheader("Differential Transformation")
+
+                    # Aplicar diferenciación
+                    diff_df = result.diff().dropna()  # Aplicar diff() y eliminar NaN
+
+                    st.subheader("Data Transformed by Differentiation")
+                    st.write(diff_df)
+
+                    # Pruebas de estacionariedad después de la diferenciación
+                    st.subheader("Stationarity Tests After Differentiation")
+
+                    # Ejecutar prueba KPSS después de la diferenciación
+                    st.write("### KPSS Test After Differentiation")
+                    kpss_result_diff, kpss_p_value_diff = test_stationarity_kpss(diff_df.iloc[:, 0])
+                    st.write(kpss_result_diff)
+
+                    # Ejecutar prueba ADF después de la diferenciación
+                    st.write("### ADF Test After Differentiation")
+                    adf_result_diff, adf_p_value_diff = test_stationarity_adfuller(diff_df.iloc[:, 0])
+                    st.write(adf_result_diff)
+
         else:
             st.write("No se encontró ninguna columna de fecha en el DataFrame cargado.")
 
-        # Pruebas de estacionariedad inicial
-        st.subheader("Initial Stationarity Tests")
-
-        # Ejecutar prueba KPSS inicial
-        st.write("### Initial KPSS Test")
-        kpss_result, kpss_p_value = test_stationarity_kpss(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
-        st.write(kpss_result)
-
-        # Ejecutar prueba ADF inicial
-        st.write("### Initial ADF Test")
-        adf_result, adf_p_value = test_stationarity_adfuller(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
-        st.write(adf_result)
-
-        if kpss_p_value < 0.05 or adf_p_value >= 0.05:
-            st.subheader("Differential Transformation")
-
-            # Aplicar diferenciación
-            diff_df = result.diff().dropna()  # Aplicar diff() y eliminar NaN
-
-            st.subheader("Data Transformed by Differentiation")
-            st.write(diff_df)
-
-            # Pruebas de estacionariedad después de la diferenciación
-            st.subheader("Stationarity Tests After Differentiation")
-
-            # Ejecutar prueba KPSS después de la diferenciación
-            st.write("### KPSS Test After Differentiation")
-            kpss_result_diff, kpss_p_value_diff = test_stationarity_kpss(diff_df.iloc[:, 0])
-            st.write(kpss_result_diff)
-
-            # Ejecutar prueba ADF después de la diferenciación
-            st.write("### ADF Test After Differentiation")
-            adf_result_diff, adf_p_value_diff = test_stationarity_adfuller(diff_df.iloc[:, 0])
-            st.write(adf_result_diff)
 
             # Widget para seleccionar el valor de m
             m = st.selectbox("Select the value of m:", [1, 7, 30, 365])
