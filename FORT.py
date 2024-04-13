@@ -103,12 +103,14 @@ def main():
 
         # Visualizar gráfico de autocorrelación parcial (PACF)
         st.subheader(f"Partial Autocorrelation Plot (PACF) with {num_lags} Lags")
-        fig_pacf =  plot_pacf(result, lags=num_lags)
+        fig_pacf, ax_pacf = plt.subplots()
+        plot_pacf(df, lags=num_lags, ax=ax_pacf)
         st.pyplot(fig_pacf)
 
         # Visualizar gráfico de autocorrelación (ACF)
         st.subheader(f"Autocorrelation Plot (ACF) with {num_lags} Lags")
-        fig_acf = plot_acf(result, lags=num_lags)
+        fig_acf, ax_acf = plt.subplots()
+        plot_acf(df, lags=num_lags, ax=ax_acf)
         st.pyplot(fig_acf)
 
         # Pruebas de estacionariedad inicial
