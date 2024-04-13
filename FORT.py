@@ -84,7 +84,7 @@ def main():
             if pd.api.types.is_datetime64_any_dtype(df[columna]):
                 # Establecer la columna como índice
                 df[columna] = pd.to_datetime(df[columna])  # Convertir la columna a tipo datetime si no lo es ya
-                df = df.set_index(columna, inplace=True)
+                result = df.set_index(columna, inplace=True)
                 print(f"Se estableció '{columna}' como el índice del DataFrame.")
                 break  # Detener la iteración después de encontrar la primera columna de fecha
 
@@ -97,12 +97,12 @@ def main():
 
         # Visualizar gráfico de autocorrelación parcial (PACF)
         st.subheader(f"Partial Autocorrelation Plot (PACF) with {num_lags} Lags")
-        fig_pacf = sm.graphics.tsa.plot_pacf(df, lags=num_lags)
+        fig_pacf = sm.graphics.tsa.plot_pacf(result, lags=num_lags)
         st.pyplot(fig_pacf)
 
         # Visualizar gráfico de autocorrelación (ACF)
         st.subheader(f"Autocorrelation Plot (ACF) with {num_lags} Lags")
-        fig_acf = sm.graphics.tsa.plot_acf(df, lags=num_lags)
+        fig_acf = sm.graphics.tsa.plot_acf(result, lags=num_lags)
         st.pyplot(fig_acf)
 
         # Pruebas de estacionariedad inicial
@@ -110,19 +110,19 @@ def main():
 
         # Ejecutar prueba KPSS inicial
         st.write("### Initial KPSS Test")
-        kpss_result, kpss_p_value = test_stationarity_kpss(df.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
+        kpss_result, kpss_p_value = test_stationarity_kpss(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
         st.write(kpss_result)
 
         # Ejecutar prueba ADF inicial
         st.write("### Initial ADF Test")
-        adf_result, adf_p_value = test_stationarity_adfuller(df.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
+        adf_result, adf_p_value = test_stationarity_adfuller(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
         st.write(adf_result)
 
         if kpss_p_value < 0.05 or adf_p_value >= 0.05:
             st.subheader("Differential Transformation")
 
             # Aplicar diferenciación
-            diff_df = df.diff().dropna()  # Aplicar diff() y eliminar NaN
+            diff_df = result.diff().dropna()  # Aplicar diff() y eliminar NaN
 
             st.subheader("Data Transformed by Differentiation")
             st.write(diff_df)
