@@ -62,56 +62,56 @@ def main():
     # Renderiza cada autor con un enlace a LinkedIn
     for autor in autores:
         st.markdown(f"[{autor['nombre']}]({autor['LinkedIn']})")
-
-
     # Cargar el contenido del archivo JSON
-    
 
     uploaded_file = st.file_uploader("Load CSV file", type=['csv'])
     st.write('Remember that your file must be a CSV with the date variable and the column to use for analysis.')
+        # Widget para cargar un archivo CSV
+    uploaded_file = st.file_uploader("Upload CSV", type="csv")
     
     if uploaded_file is not None:
         st.write("File uploaded successfully.")
-
+        
+        # Cargar los datos del archivo subido
         df = load_data(uploaded_file)
-
+        
         st.subheader("Table")
         st.write(df)
-
         
         # Variable para almacenar el nombre de la columna de fecha (si se encuentra)
         fecha_columna = None
-        # Variable para almacenar el nuevo DataFrame con la columna de fecha como índice
-        result = None
-
-        # Iterar sobre las columnas del DataFrame
+        
+        # Iterar sobre las columnas del DataFrame para encontrar una columna de fecha
         for columna in df.columns:
-            # Verificar si la columna es de tipo fecha
             if pd.api.types.is_datetime64_any_dtype(df[columna]):
                 fecha_columna = columna
-                break  # Detener la iteración después de encontrar la primera columna de fecha
+                break
         
         # Si se encontró una columna de fecha
         if fecha_columna:
             # Crear un nuevo DataFrame con la columna de fecha como índice
             result = df.set_index(fecha_columna).copy()
-            print(f"Se estableció '{fecha_columna}' como el índice del nuevo DataFrame.")
-        
-
-        # Widget para ingresar el número de lags
-        num_lags = st.number_input("Numbers of Lags para PACF y ACF:", min_value=1, max_value=50, value=10)
-        serie = result.values
-        # Visualizar gráfico de autocorrelación parcial (PACF)
-        st.subheader(f"Partial Autocorrelation Plot (PACF) with {num_lags} Lags")
-        fig_pacf, ax_pacf = plt.subplots()
-        plot_pacf(serie, lags=num_lags, ax=ax_pacf)
-        st.pyplot(fig_pacf)
-
-        # Visualizar gráfico de autocorrelación (ACF)
-        st.subheader(f"Autocorrelation Plot (ACF) with {num_lags} Lags")
-        fig_acf, ax_acf = plt.subplots()
-        plot_acf(serie, lags=num_lags, ax=ax_acf)
-        st.pyplot(fig_acf)
+            st.write(f"Se estableció '{fecha_columna}' como el índice del nuevo DataFrame.")
+            
+            # Widget para ingresar el número de lags
+            num_lags = st.number_input("Numbers of Lags para PACF y ACF:", min_value=1, max_value=50, value=10)
+            
+            # Verificar si result está definido y no es None
+            if result is not None:
+                serie = result.values  # Obtener la serie de valores
+                # Visualizar gráfico de autocorrelación parcial (PACF)
+                st.subheader(f"Partial Autocorrelation Plot (PACF) with {num_lags} Lags")
+                fig_pacf, ax_pacf = plt.subplots()
+                plot_pacf(serie, lags=num_lags, ax=ax_pacf)
+                st.pyplot(fig_pacf)
+                
+                # Visualizar gráfico de autocorrelación (ACF)
+                st.subheader(f"Autocorrelation Plot (ACF) with {num_lags} Lags")
+                fig_acf, ax_acf = plt.subplots()
+                plot_acf(serie, lags=num_lags, ax=ax_acf)
+                st.pyplot(fig_acf)
+        else:
+            st.write("No se encontró ninguna columna de fecha en el DataFrame cargado.")
 
         # Pruebas de estacionariedad inicial
         st.subheader("Initial Stationarity Tests")
