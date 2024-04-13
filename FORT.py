@@ -100,17 +100,17 @@ def main():
 
         # Widget para ingresar el número de lags
         num_lags = st.number_input("Numbers of Lags para PACF y ACF:", min_value=1, max_value=50, value=10)
-
+        serie = result.values
         # Visualizar gráfico de autocorrelación parcial (PACF)
         st.subheader(f"Partial Autocorrelation Plot (PACF) with {num_lags} Lags")
         fig_pacf, ax_pacf = plt.subplots()
-        plot_pacf(result.values, lags=num_lags, ax=ax_pacf)
+        plot_pacf(serie, lags=num_lags, ax=ax_pacf)
         st.pyplot(fig_pacf)
 
         # Visualizar gráfico de autocorrelación (ACF)
         st.subheader(f"Autocorrelation Plot (ACF) with {num_lags} Lags")
         fig_acf, ax_acf = plt.subplots()
-        plot_acf(result.values, lags=num_lags, ax=ax_acf)
+        plot_acf(serie, lags=num_lags, ax=ax_acf)
         st.pyplot(fig_acf)
 
         # Pruebas de estacionariedad inicial
