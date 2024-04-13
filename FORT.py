@@ -67,7 +67,7 @@ def main():
     
 
     uploaded_file = st.file_uploader("Load CSV file", type=['csv'])
-    st.write('Remember that your file must be a CSV with the date variable in the index and the column to use for analysis.')
+    st.write('Remember that your file must be a CSV with the date variable and the column to use for analysis.')
     
     if uploaded_file is not None:
         st.write("File uploaded successfully.")
@@ -89,8 +89,8 @@ def main():
                 break  # Detener la iteración después de encontrar la primera columna de fecha
 
         # Si ninguna columna es de tipo fecha
-        else:
-            print("No se encontraron columnas de fecha en el DataFrame.")
+            else:
+                print("No se encontraron columnas de fecha en el DataFrame.")
 
         # Widget para ingresar el número de lags
         num_lags = st.number_input("Numbers of Lags para PACF y ACF:", min_value=1, max_value=50, value=10)
