@@ -63,7 +63,7 @@ def main():
     
 
     uploaded_file = st.file_uploader("Load CSV file", type=['csv'])
-    st.write('Remember that your file must be a CSV with the date variable in the index and the column to use for analysis.')
+    st.write('Remember to organize your table according to the order of the dates you need (daily, monthly, weekly or yearly) and then leave only the target variable')
     
     if uploaded_file is not None:
         st.write("File uploaded successfully.")
@@ -72,29 +72,18 @@ def main():
 
         st.subheader("Table")
         st.write(df)
-        fecha_columna = None
-        # Verificar explícitamente si alguna columna es una columna de fecha
-        for columna in df.columns:
-            if df[columna].dtype == 'datetime64[ns]':
-                fecha_columna = columna
-                break
-        
-        if fecha_columna:
-            st.write(f"Se encontró la columna de fecha: '{fecha_columna}'")
-            
-            result = df.set_index(fecha_columna).copy()
-            st.write(f"Se estableció '{fecha_columna}' como el índice del nuevo DataFrame.")
+
         # Widget para ingresar el número de lags
         num_lags = st.number_input("Numbers of Lags para PACF y ACF:", min_value=1, max_value=50, value=10)
 
         # Visualizar gráfico de autocorrelación parcial (PACF)
         st.subheader(f"Partial Autocorrelation Plot (PACF) with {num_lags} Lags")
-        fig_pacf = sm.graphics.tsa.plot_pacf(result, lags=num_lags)
+        fig_pacf = sm.graphics.tsa.plot_pacf(df, lags=num_lags)
         st.pyplot(fig_pacf)
 
         # Visualizar gráfico de autocorrelación (ACF)
         st.subheader(f"Autocorrelation Plot (ACF) with {num_lags} Lags")
-        fig_acf = sm.graphics.tsa.plot_acf(result, lags=num_lags)
+        fig_acf = sm.graphics.tsa.plot_acf(df, lags=num_lags)
         st.pyplot(fig_acf)
 
         # Pruebas de estacionariedad inicial
@@ -102,19 +91,19 @@ def main():
 
         # Ejecutar prueba KPSS inicial
         st.write("### Initial KPSS Test")
-        kpss_result, kpss_p_value = test_stationarity_kpss(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
+        kpss_result, kpss_p_value = test_stationarity_kpss(df.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
         st.write(kpss_result)
 
         # Ejecutar prueba ADF inicial
         st.write("### Initial ADF Test")
-        adf_result, adf_p_value = test_stationarity_adfuller(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
+        adf_result, adf_p_value = test_stationarity_adfuller(df.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
         st.write(adf_result)
 
         if kpss_p_value < 0.05 or adf_p_value >= 0.05:
             st.subheader("Differential Transformation")
 
             # Aplicar diferenciación
-            diff_df = result.diff().dropna()  # Aplicar diff() y eliminar NaN
+            diff_df = df.diff().dropna()  # Aplicar diff() y eliminar NaN
 
             st.subheader("Data Transformed by Differentiation")
             st.write(diff_df)
