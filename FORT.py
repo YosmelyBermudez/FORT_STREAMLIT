@@ -51,19 +51,23 @@ def main():
     st.write('Selection of hyperparameters for time series')
     # Define los nombres de los autores y sus enlaces a LinkedIn
     autores = [
-        {"nombre": "Mariana Andreína Paredes ", "LinkedIn": "https://www.linkedin.com/in/marianaandreinaparedesmena/"},
+        {"nombre": "Mariana Andreína Paredes ", "LinkedIn": "https://www.linkedin.com/in/luc%C3%ADa-p%C3%A1ez-gayone-10b5252b1/"},
         {"nombre": "Yosmely Bermúdez", "LinkedIn": "https://www.linkedin.com/in/yosmely-bermudez/"}
     ]
 
     # Título para la sección de autores
     st.title("Authors")
 
+    # Renderiza cada autor con un enlace a LinkedIn
+    for autor in autores:
+        st.markdown(f"[{autor['nombre']}]({autor['LinkedIn']})")
+
 
     # Cargar el contenido del archivo JSON
     
 
     uploaded_file = st.file_uploader("Load CSV file", type=['csv'])
-    st.write('Remember to organize your table according to the order of the dates you need (daily, monthly, weekly or yearly) and then leave only the target variable')
+    st.write('Remember that your file must be a CSV with the date variable in the index and the column to use for analysis.')
     
     if uploaded_file is not None:
         st.write("File uploaded successfully.")
