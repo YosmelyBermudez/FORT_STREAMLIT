@@ -7,7 +7,6 @@ from statsmodels.stats.diagnostic import acorr_ljungbox
 from pmdarima import auto_arima
 from streamlit_lottie import st_lottie
 import matplotlib.pyplot as plt
-from statsmodels.graphics.tsaplots import plot_pacf, plot_acf
 import json
 
 def load_data(file_path):
@@ -59,28 +58,21 @@ def main():
     # Título para la sección de autores
     st.title("Authors")
 
-    # Renderiza cada autor con un enlace a LinkedIn
-    for autor in autores:
-        st.markdown(f"[{autor['nombre']}]({autor['LinkedIn']})")
+
     # Cargar el contenido del archivo JSON
-    st.write('Remember that your file must be a CSV with the date variable and the column to use for analysis.')
-        # Widget para cargar un archivo CSV
-    uploaded_file = st.file_uploader("Upload CSV", type="csv")
+    
+
+    uploaded_file = st.file_uploader("Load CSV file", type=['csv'])
+    st.write('Remember that your file must be a CSV with the date variable in the index and the column to use for analysis.')
     
     if uploaded_file is not None:
         st.write("File uploaded successfully.")
-        
+
         df = load_data(uploaded_file)
-        
+
         st.subheader("Table")
         st.write(df)
-        
         fecha_columna = None
-        
-        # Inspeccionar las columnas del DataFrame
-        st.write("Columnas del DataFrame cargado:")
-        st.write(df.columns)
-        
         # Verificar explícitamente si alguna columna es una columna de fecha
         for columna in df.columns:
             if df[columna].dtype == 'datetime64[ns]':
@@ -92,46 +84,53 @@ def main():
             
             result = df.set_index(fecha_columna).copy()
             st.write(f"Se estableció '{fecha_columna}' como el índice del nuevo DataFrame.")
-            
-            num_lags = st.number_input("Numbers of Lags para PACF y ACF:", min_value=1, max_value=50, value=10)
-            
-            if result is not None:
-                serie = result.iloc[:, 0]  # Seleccionar una columna para el análisis de series temporales
-                
-                st.subheader(f"Partial Autocorrelation Plot (PACF) with {num_lags} Lags")
-                fig_pacf, ax_pacf = plt.subplots()
-                plot_pacf(serie, lags=num_lags, ax=ax_pacf)
-                st.pyplot(fig_pacf)
-                
-                st.subheader(f"Autocorrelation Plot (ACF) with {num_lags} Lags")
-                fig_acf, ax_acf = plt.subplots()
-                plot_acf(serie, lags=num_lags, ax=ax_acf)
-                st.pyplot(fig_acf)
-                
-                # Ejemplo de prueba de estacionariedad
-                st.subheader("Initial Stationarity Tests")
-                
-                # Prueba de estacionariedad ADF
-                adf_result = adfuller(serie)
-                st.write(f"ADF Statistic: {adf_result[0]}")
-                st.write(f"p-value: {adf_result[1]}")
-                if adf_result[1] < 0.05:
-                    st.write("Data is stationary according to ADF test.")
-                else:
-                    st.write("Data is not stationary according to ADF test.")
-                    
-                # Prueba de estacionariedad KPSS
-                kpss_result = kpss(serie)
-                st.write(f"KPSS Statistic: {kpss_result[0]}")
-                st.write(f"p-value: {kpss_result[1]}")
-                if kpss_result[1] < 0.05:
-                    st.write("Data is not stationary according to KPSS test.")
-                else:
-                    st.write("Data is stationary according to KPSS test.")
-                    
-        else:
-            st.write("No se encontró ninguna columna de fecha en el DataFrame cargado.")
+        # Widget para ingresar el número de lags
+        num_lags = st.number_input("Numbers of Lags para PACF y ACF:", min_value=1, max_value=50, value=10)
 
+        # Visualizar gráfico de autocorrelación parcial (PACF)
+        st.subheader(f"Partial Autocorrelation Plot (PACF) with {num_lags} Lags")
+        fig_pacf = sm.graphics.tsa.plot_pacf(result, lags=num_lags)
+        st.pyplot(fig_pacf)
+
+        # Visualizar gráfico de autocorrelación (ACF)
+        st.subheader(f"Autocorrelation Plot (ACF) with {num_lags} Lags")
+        fig_acf = sm.graphics.tsa.plot_acf(result, lags=num_lags)
+        st.pyplot(fig_acf)
+
+        # Pruebas de estacionariedad inicial
+        st.subheader("Initial Stationarity Tests")
+
+        # Ejecutar prueba KPSS inicial
+        st.write("### Initial KPSS Test")
+        kpss_result, kpss_p_value = test_stationarity_kpss(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
+        st.write(kpss_result)
+
+        # Ejecutar prueba ADF inicial
+        st.write("### Initial ADF Test")
+        adf_result, adf_p_value = test_stationarity_adfuller(result.iloc[:, 0])  # Seleccionar una columna del DataFrame para la prueba
+        st.write(adf_result)
+
+        if kpss_p_value < 0.05 or adf_p_value >= 0.05:
+            st.subheader("Differential Transformation")
+
+            # Aplicar diferenciación
+            diff_df = result.diff().dropna()  # Aplicar diff() y eliminar NaN
+
+            st.subheader("Data Transformed by Differentiation")
+            st.write(diff_df)
+
+            # Pruebas de estacionariedad después de la diferenciación
+            st.subheader("Stationarity Tests After Differentiation")
+
+            # Ejecutar prueba KPSS después de la diferenciación
+            st.write("### KPSS Test After Differentiation")
+            kpss_result_diff, kpss_p_value_diff = test_stationarity_kpss(diff_df.iloc[:, 0])
+            st.write(kpss_result_diff)
+
+            # Ejecutar prueba ADF después de la diferenciación
+            st.write("### ADF Test After Differentiation")
+            adf_result_diff, adf_p_value_diff = test_stationarity_adfuller(diff_df.iloc[:, 0])
+            st.write(adf_result_diff)
 
             # Widget para seleccionar el valor de m
             m = st.selectbox("Select the value of m:", [1, 7, 30, 365])
