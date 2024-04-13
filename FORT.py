@@ -80,6 +80,8 @@ def main():
         
         # Variable para almacenar el nombre de la columna de fecha (si se encuentra)
         fecha_columna = None
+        # Variable para almacenar el nuevo DataFrame con la columna de fecha como índice
+        result = None
 
         # Iterar sobre las columnas del DataFrame
         for columna in df.columns:
@@ -87,8 +89,7 @@ def main():
             if pd.api.types.is_datetime64_any_dtype(df[columna]):
                 fecha_columna = columna
                 break  # Detener la iteración después de encontrar la primera columna de fecha
-        # Variable para almacenar el nuevo DataFrame con la columna de fecha como índice
-        result = None
+        
         # Si se encontró una columna de fecha
         if fecha_columna:
             # Crear un nuevo DataFrame con la columna de fecha como índice
