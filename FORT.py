@@ -67,7 +67,7 @@ def main():
     
 
     uploaded_file = st.file_uploader("Load CSV file", type=['csv'])
-    st.write('Remember that your file must be a CSV with the date variable in the index and the column to use for analysis.')
+    st.write('Remember to organize your table according to the order of the dates you need (daily, monthly, weekly or yearly) and then leave only the target variable')
     
     if uploaded_file is not None:
         st.write("File uploaded successfully.")
